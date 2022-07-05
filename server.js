@@ -46,9 +46,11 @@ function removeDuplicateObjectFromArray(array, key) {
 }
 //remove duplicate news
 const data = removeDuplicateObjectFromArray(news_list ,'title')
-
+//filter data with titleEn not null
 const filterData = data.filter((data)=> data.titleEn !== null)
 const filterDataObj = []
+
+//this for object id not give error
  filterData.forEach((data)=>{
     const dataIDs= {
         _id: mongoose.Types.ObjectId(data._id),
@@ -67,6 +69,7 @@ const filterDataObj = []
     filterDataObj.push(dataIDs)
 })
 
+// insert Array of object in mongodb
 app.post('/insertMany',async (req, res)=>{
   const data = await News.insertMany(filterDataObj, function(error, docs) {
         if(error){
@@ -77,6 +80,7 @@ app.post('/insertMany',async (req, res)=>{
     res.status(200).send({msg:"bulk data created successfully", error:false, res:data});
 })
 
+//serach api with string
 app.get('/search', async(req, res) => {
   const searchResult = await News.find({$text: {$search: req.body.search}}).sort({pubDate:-1})
   if(searchResult.length !== 0) {
